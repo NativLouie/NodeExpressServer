@@ -4,18 +4,20 @@ const path = require('path'); //reference path/file directory
 const mongoose = require('mongoose') //schema 
 const morgan = require('morgan') //http request logger ??
 const fs = require('fs'); //file system for node ??
-const status = require('http-status')
-const personRoute = require('../routes/person'); //import statement
 const CustomerRoute = require('../routes/customer'); //import statement
 const userAccount = require('../routes/user');
 
 
 const app = express() // initialize express
 
+
+
+
 mongoose.connect(
     'mongodb://sam:'+ 
-    process.env.MONGO_MLAB_PW + '@ds135844.mlab.com:35844/loginsystem', { useNewUrlParser: true })
-mongoose.set('useCreateIndex', true);
+    process.env.MONGO_MLAB_PW + '@ds135844.mlab.com:35844/loginsystem',
+    { useNewUrlParser: true }, console.log("Database is Connected"))
+mongoose.set('useCreateIndex', true); //connect to database
 
 //now.sh ~> deloy
 
@@ -27,11 +29,10 @@ mongoose.set('useCreateIndex', true);
 
 
 app.use(morgan('dev'))
-app.use(bodyParser.urlencoded({ extended: false}))
+app.use(bodyParser.urlencoded({ extended: true}))
 app.use(bodyParser.json())
-app.use(personRoute)
 app.use(CustomerRoute)
-app.use(express.static('public'))
+
 
 
 
