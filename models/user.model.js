@@ -8,23 +8,21 @@ const userSchema = new mongoose.Schema({
     userEmail: {
       type: String,
       trim:true,
-      required: [true, 'Email field is required'],
+      required: true, 
       unique: true,
-      match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
-      // index:true, 
-      // sparse:true
+      match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
+      index: {unique: true, dropDups: true}
     },
     userName: {
         type: String,
         trim:true,
-        required: [true, 'Username field is required'],
+        required: true,
         unique: true,
-        // index:true, 
-        // sparse:true
+        index: {unique: true, dropDups: true}
       },
     userPassword: {
       type: String,
-      required:[true, 'Password field is required']
+      required:true,
  
     },
     heritage: {
@@ -35,6 +33,7 @@ const userSchema = new mongoose.Schema({
     },
     userImage:{
       type: String,
+      trim:true,
       required: [true, 'Image field is required']
 
     },

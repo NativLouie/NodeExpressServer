@@ -1,5 +1,6 @@
 {
     "env":{
-        "MONGO_MLAB_PW":"love2code28"
+        "MONGO_MLAB_PW":"love2code28",
+        "JWT_KEY": "fufu-andamala(ismyfavorite_chai7894kjdf09kkj7efnvf0opfm;fn90fjisdfr0"
     }
 }

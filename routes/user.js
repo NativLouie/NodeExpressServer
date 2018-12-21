@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const storage = require('../config/imagestorage.config');
 const fileFilter = require('../config/imagefilter.config');
@@ -9,15 +10,20 @@ const upload = multer({ storage: storage, limits: {fileSize: 1024 * 1024 * 5}, f
 const UserModel = require('../models/user.model');
 
 
+
+
+
+
 //create a new user
 //post localhost:3000/user/signup
 //post method 1
-// todo ~> if email already exists return
+//Sign up with info & image upload
+// todo ~> if email already exists return proper error
 //-----------------------------------
-//CREAT NEW USERç
+//CREAT NEW USER
 // //-----------------------------------
 router.post("/signup", upload.single('userImage'), (req, res, next) => {
-    UserModel.findOne({ email: req.body.userEmail })
+    UserModel.find({ email: req.body.userEmail })
       .exec()
       .then(user => {
         if (user.length >= 1) {
@@ -58,7 +64,7 @@ router.post("/signup", upload.single('userImage'), (req, res, next) => {
                         }
                     }
                 })
-            })
+             })
                 .catch(err => {
                   console.log(err);
                   res.status(500).json({
@@ -79,7 +85,7 @@ router.post("/signup", upload.single('userImage'), (req, res, next) => {
 //post method 2
 //-----------------------------------
 //CREAT NEW USER
-// //-----------------------------------
+//-----------------------------------
 // router.post('/', upload.single('userImage'), (req, res, next)=> {
 //     const user = new UserModel({
 //         userEmail: req.body.userEmail,
@@ -125,7 +131,7 @@ router.post("/signup", upload.single('userImage'), (req, res, next) => {
 //post method 3
 //-----------------------------------
 //CREAT NEW USER
-// //-----------------------------------
+//-----------------------------------
 // router.post('/', (req, res, next)=> {
 //     if(!req.body){
 //         return res.send(status[400])
@@ -149,6 +155,73 @@ router.post("/signup", upload.single('userImage'), (req, res, next) => {
 //         res.status(500).json(err)
 //     })
 // })
+
+
+
+
+
+
+
+//Login User
+//post localhost:3000/user/login
+//post method 1
+// ~> logs in with username or useremail
+//-----------------------------------
+//Login Existing USER
+//-----------------------------------
+
+router.post("/login", (req, res, next) => {
+    UserModel.find({ userEmail: req.body.userEmail} && { userName: req.body.userName})
+      .exec()
+      .then(user => {
+        if (user.length < 1) {
+          return res.status(401).json({
+            message: "Authentication was unsuccessful"
+          });
+        }
+        bcrypt.compare(req.body.userPassword, user[0].userPassword, (err, result) => {
+          if (err) {
+            return res.status(401).json({
+              message: "Authentication was unsuccessful"
+            });
+          }
+          if (result) {
+          
+            const token = jwt.sign(
+              {
+                userEmail: user[0].userEmail,
+                userName: user[0].userName,
+                _id: user[0]._id
+              },
+              process.env.JWT_KEY,
+              {
+                  expiresIn: "1h"
+              },
+            );
+            return res.status(200).json({
+              message: "User authentication was successful",
+              token: token
+            });
+          }
+          res.status(401).json({
+            message: "Authentication was unsuccessful"
+          });
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        res.status(500).json({
+          error: err
+        });
+      });
+  });
+  
+
+
+
+
+
+
 
 
 
@@ -233,19 +306,6 @@ router.get('/:userId', (req, res, next)=> {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 //update USER password
 //post localhost:3000/user
 // this method for user name and email
@@ -289,7 +349,7 @@ router.delete("/:userId", (req, res, next) => {
       .exec()
       .then(result => {
         res.status(200).json({
-          message: "User deleted"
+          message: "User account deleted"
         });
       })
       .catch(err => {
