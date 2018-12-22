@@ -6,6 +6,7 @@ const morgan = require('morgan') //http request logger ??
 const fs = require('fs'); //file system for node ??
 const CustomerRoute = require('../routes/customer'); //import statement
 const userAccount = require('../routes/user');
+const restaurants = require('../routes/restaurants');
 
 
 const app = express() // initialize express
@@ -68,6 +69,7 @@ app.use((req, res, next)=>{
 //-----------------------------------
 // 
 app.use('/user', userAccount);
+app.use('/businesses', restaurants);
 
 
 

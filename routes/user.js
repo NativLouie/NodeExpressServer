@@ -23,12 +23,12 @@ const UserModel = require('../models/user.model');
 //CREAT NEW USER
 // //-----------------------------------
 router.post("/signup", upload.single('userImage'), (req, res, next) => {
-    UserModel.find({ email: req.body.userEmail })
+    UserModel.find({ userEmail: req.body.userEmail } && { userName: req.body.userName})
       .exec()
       .then(user => {
         if (user.length >= 1) {
           return res.status(409).json({
-            message: "Email address is taken"
+            message: "Email address or username is taken"
           });
         } else {
           bcrypt.hash(req.body.userPassword, 10, (err, hash) => {
@@ -51,18 +51,18 @@ router.post("/signup", upload.single('userImage'), (req, res, next) => {
                   console.log(result);
                   res.status(201).json({
                     message:"User has been sucessfully created",
-                    userCreated: {
-                        _id: result._id,
-                        userEmail: result.userEmail,
-                        userName: result.userName,
-                        userPassword: result.userPassword,
-                        heritage: result.heritage,
-                        userImage: result.userImage,
-                        response:{
-                            method: "POST",
-                            url: "http://localhost:3000/user/signup/" + result._id
-                        }
-                    }
+                    // userCreated: {
+                    //     _id: result._id,
+                    //     userEmail: result.userEmail,
+                    //     userName: result.userName,
+                    //     userPassword: result.userPassword,
+                    //     heritage: result.heritage,
+                    //     userImage: result.userImage,
+                    //     response:{
+                    //         method: "POST",
+                    //         url: "http://localhost:3000/user/signup/" + result._id
+                    //     }
+                    // }
                 })
              })
                 .catch(err => {
@@ -227,78 +227,6 @@ router.post("/login", (req, res, next) => {
 
 
 
-//GET a USER
-//GET localhost:3000/user/_id
-// get method 1 (cleaner response)
-//-----------------------------------
-//Find USER by params _id
-//-----------------------------------
-router.get('/:userId', (req, res, next)=> {
-    const id = req.params.userId;
-    UserModel.findById(id)
-    .select("userEmail userName userPassword userImage ")
-    .exec()
-    .then(doc => {
-        console.log("from Database", doc);
-        if (doc) {
-            res.status(200).json({
-                message:"User sucessfully retrieved",
-                userRetrieved: {
-                    _id: doc._id,
-                    userEmail: doc.userEmail,
-                    userName: doc.userName,
-                    userPassword: doc.userPassword,
-                    heritage: doc.heritage,
-                    userImage: doc.userImage,
-                    response:{
-                        method: "GET",
-                        url: "http://localhost:3000/user/" + doc._id
-                    }
-                }
-            })
-        }else {
-            res.status(404).json({
-                message:" Entry not found",
-            })
-        }
-    })
-    .catch(err =>{
-        console.log(err);
-        res.status(500).json({ error: err})
-    })
-})
-
-
-
-// //GET a USER
-// //GET localhost:3000/user/_id
-// get method 2
-// //-----------------------------------
-// //Find USER by params _id
-// //-----------------------------------
-// router.get('/:userId', (req, res, next)=> {
-//     const id = req.params.userId;
-//     UserModel.findById(id)
-//     .select("userEmail userName userPassword ")
-//     .exec()
-//     .then(doc => {
-//         console.log("from Database", doc);
-//         if (doc) {
-//             res.status(200).json({
-//                 message:"GET requests ENDPOINT",
-//                 userRetrieved: doc
-//             })
-//         }else {
-//             res.status(404).json({
-//                 message:" Entry not found",
-//             })
-//         }
-//     })
-//     .catch(err =>{
-//         console.log(err);
-//         res.status(500).json({ error: err})
-//     })
-// })
 
 
 
